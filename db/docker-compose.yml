@@ -1,0 +1,45 @@
+version: '3.4'
+
+services:
+    mysql:
+        image: mysql:5.7
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD=123456
+            - MYSQL_DATABASE=test
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=123456
+            - MYSQL_HOST=0.0.0.0
+            - MYSQL_PORT=3306  # cannot change this port to other number
+            - MYSQL_ROOT_HOST=%
+        ports:
+            - '3306:3306'
+        volumes:
+          - './data/mysql:/var/lib/mysql'
+          - './mysqlconf1.conf:/etc/mysql/mysql.conf.d/mysqlconf1.cnf'
+        networks:
+#            - host
+            - back-tier
+
+    redis:
+        user: root
+        image: 'bitnami/redis:latest'
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+        ports:
+            - '6379:6379'
+        volumes:
+            - ./data/redis:/bitnami
+        restart: always
+        networks:
+#            - host
+          - back-tier
+
+networks:
+  front-tier:
+    driver: bridge
+  back-tier:
+    driver: bridge
+#networks:
+#  host:
+#    driver: bridge

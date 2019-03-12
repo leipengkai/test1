@@ -1,0 +1,7 @@
+django==1.7
+djangorestframework
+django-filter
+celery
+mysqlclient
+pillow
+djangorestframework-jwt

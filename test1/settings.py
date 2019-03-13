@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'rest_framework',
     # 'django-filters',
     'product',
-   'djcelery',
+    'djcelery',
     'djkombu',
 )
 
@@ -91,13 +91,17 @@ USE_TZ = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 1,
+    'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    ]
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ) ,
     # 'DEFAULT_PERMISSION_CLASSES': (
     #    'rest_framework.permissions.AllowAny',
     # ),
@@ -128,6 +132,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "product.context_processors.admin_media",
             ],
         },
     },

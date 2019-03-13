@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <style>
+    ul{
+        list-style: none;
+        margin:0px;
+        padding:0px;
+        width:auto;
+    }
+    ul li{
+        float:left;
+        margin-top:10px;
+        padding:10px;
+        border-style: solid;
+        border:1px solid;
+    }
+</style>
+    <meta charset="UTF-8">
+    <title>Product</title>
+    <link type="text/css" rel="stylesheet" href="easyui/themes/icon.css">
+    <link type="text/css" rel="stylesheet" href="easyui/themes/default/easyui.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+</head>
+
+<body class="easyui-layout">
+<div data-options="region:'north',split:false" style="height:100px;">
+    <h1 style="text-align: center">商品页面</h1>
+</div>
+<div data-options="region:'west',title:'商品分类',split:true" style="width:200px;">
+    <ul id="categoryTree" >
+    </ul>
+</div>
+<div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">
+
+</div>
+
+</div>
+
+{#弹出的dialog中的内容#}
+<div id="category-form-dialog">
+    <div>
+        <table border="1" cellspacing="1" cellpadding="1" >
+            <tr>
+                <th>goods_SN</th>
+                <th>Name</th>
+                <th>Key</th>
+                <th>Image</th>
+                <th>priority </th>
+                <th>file_address</th>
+{#            <th width="200px">time</th>#}
+            </tr>
+
+            {% for data in data_list %}
+                <tr>
+                    <td>{{ data.goods_sn}}</td>
+                    <td>{{ data.name }}</td>
+                    <td>{{ data.key }}</td>
+                    <td>{{ data.priority  }}</td>
+                    <td>{{ data.file_address }}</td>
+                    <td><img src={{ data.image.url }} > </td>
+{#                    <td>{{ host }}{{ data.image.url }}  </td>#}
+{#                    <td width="200px">{{ data.time }}</td>#}
+                </tr>
+            {% endfor %}
+
+        </table>
+        <ul class="pagination">
+            {% if page_object.has_previous %}
+                <li>
+                <a href="?page={{ page_object.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                </li>
+            {% endif %}
+
+           {% for pg in page_object.paginator.page_range %}
+            {% if page_object.number == pg %}
+            <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
+            {% else %}
+            <li><a href="?page={{ pg }}">{{ pg }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if page_object.has_next %}
+                <li>
+                    <a href="?page={{ page_object.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>

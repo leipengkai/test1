@@ -9,6 +9,12 @@ from django.contrib.auth.backends import ModelBackend
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication,BaseAuthentication
 # from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
+from django.conf import settings
+
 
 
 from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handler
@@ -119,3 +125,42 @@ class GoodsAdminViewSet(ModelViewSet):
     )
     search_fields = ('name', 'key')
     # filter_class = GoodsFilter
+class GoodsEasyUIViewSet(APIView):
+
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'goods.html'
+
+    def get(self, request):
+        queryset = Goods.objects.all()
+        paginator = Paginator(queryset , 2)
+        host = request.META['HTTP_HOST']
+        # 参考:https://blog.csdn.net/weixin_42681866/article/details/85010630
+        page = request.GET.get('page') # 从查询字符串获取page的当前页数
+        if page: # 判断：获取当前页码的数据集，这样在模版就可以针对当前的数据集进行展示
+            data_list = paginator.page(page).object_list
+        else:
+            data_list = paginator.page(1).object_list
+        try:  # 实现分页对象，分别判断当页码存在/不存在的情况，返回当前页码对象
+            page_object = paginator.page(page)
+        except PageNotAnInteger:
+            page_object = paginator.page(1)
+        except EmptyPage:
+            page_object = paginator.page(paginator.num_pages)
+        return render(request, "goods.html", {
+            'page_object':page_object,
+            'data_list':data_list,
+            'host':host,
+        }) # 返回给模版当前页码对象和当前页码的数据集
+
+        # return Response({'profiles': queryset})
+
+    def easyui(self,request):
+        queryset = Goods.objects.all()
+        # queryset = Goods.objects.filter(id=pk)[0]
+        # images = queryset.images.model.objects.filter(goods=queryset)
+        # goods_desc = queryset.goods_desc
+        # goods_desc = re.sub('(src=".*?")',r'\1 class="img-responsive"',goods_desc)
+
+
+        return render(request,'goods.html',{'goods':queryset})
+

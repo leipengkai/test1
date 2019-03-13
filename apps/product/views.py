@@ -6,6 +6,8 @@ from rest_framework.viewsets import GenericViewSet,ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status,permissions,filters
 from django.contrib.auth.backends import ModelBackend
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication,BaseAuthentication
 # from django_filters.rest_framework import DjangoFilterBackend
 
 
@@ -13,6 +15,8 @@ from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handl
 
 from models import UserProperty,Goods
 from serializers import UserRegSerializer,UserDetailSerializer,GoodsSerializer
+from tasks import django_send_email,longtime_test
+
 # from filters import GoodsFilter
 
 from django.db.models import Q
@@ -28,7 +32,13 @@ class CustomBackend(ModelBackend):
         try:
             user = UserProperty.objects.get(username=username)
             if user.check_password(password):
+                print('准备celery发送邮件')
+                msg = "<p>您已成功登录平台,谢谢您的使用</p>"
+                django_send_email(email=user.email, msg=msg)
                 return user
+            else:
+                print('用户验证失败')
+                return None
         except Exception as e:
             return None
 
@@ -101,6 +111,7 @@ class GoodsAdminViewSet(ModelViewSet):
     serializer_class = GoodsSerializer
     search_fields = ('name', 'key')
     permission_classes = [permissions.IsAdminUser]
+    authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
     filter_backends = (
         # DjangoFilterBackend,
         filters.SearchFilter,

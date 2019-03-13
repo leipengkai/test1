@@ -26,7 +26,7 @@ SECRET_KEY = '1l6o8x$%k@j#9p(j2@@jcn!e^&gm5=5^^l28dy=owktm*1u!mv'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+# TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -43,6 +43,8 @@ INSTALLED_APPS = (
     'rest_framework',
     # 'django-filters',
     'product',
+   'djcelery',
+    'djkombu',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -90,12 +92,25 @@ USE_TZ = True
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 1,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+       # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ]
     # 'DEFAULT_PERMISSION_CLASSES': (
     #    'rest_framework.permissions.AllowAny',
     # ),
     # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
 
 }
+
+import datetime
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=300),
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+}
+
 AUTHENTICATION_BACKENDS = (
     'product.views.CustomBackend',
 )
@@ -125,3 +140,30 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# Celery 设置
+import djcelery
+djcelery.setup_loader()  # 去每一个应用目录下找 tasks.py 文件，到文件中去执行 celery 任务函数
+CELERY_IMPORTS = ('product.tasks',)
+CELERY_BROKER_URL = 'redis://localhost:6379/0' # celery中间队列
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = 'Asia/Shanghai'
+
+'''发送邮件配置'''
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# smtp服务器地址
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+# 发送邮件的邮箱地址
+EMAIL_HOST_USER = 'f1643076443@163.com'
+# 在邮箱中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = 'femn2018'
+# 收件人看到的发件人
+EMAIL_FROM = 'leipengkai<f1643076443@163.com>'
+
+# BROKER_URL = 'amqp://guest:guest@localhost:5672/'  # connect RabbitMQ
+BROKER_URL = 'django://' # and add this app:
+
+INSTALLED_APPS += ('kombu.transport.django', )

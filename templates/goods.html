@@ -33,67 +33,66 @@
 {#<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>#}
 </head>
 
-<body class="easyui-layout">
-{#<div data-options="region:'north',split:false" style="height:100px;">#}
-{#    <h1 style="text-align: center">商品页面</h1>#}
-{#</div>#}
-{#<div data-options="region:'west',title:'商品分类',split:true" style="width:200px;">#}
-{#    <ul id="categoryTree" >#}
-{#    </ul>#}
-{#</div>#}
-{#<div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">#}
-{##}
-{#</div>#}
+<body class="easyui-layout" style="font-size:14px;">
 
-
-
-<div data-options="region:'north',title:'工具栏',split:true" style="height:100px;"><h1 align="center">商品管理</h1></div>
-    <div data-options="region:'west',title:'商品分类',split:true" style="width:300px;">
-        <ul id="tree">
-        </ul>
-    </div>
-<div data-options="region:'center',title:'显示框'" style="padding:5px;background:#eee;">
-
-<div id="category-form-dialog">
-    <div>
-        <table border="1" cellspacing="1" cellpadding="1" >
+{#    {% load url %}#}
+{#https://stackoverflow.com/questions/901551/how-do-i-include-image-files-in-django-templates#}
+{#    {% load url from future %}#}
+{#    <div style="padding:5px;background:#fafafa;width:200px;border:1px solid #ccc;margin-left: 10px">#}
+{#        <a href="{{ host }}/api/v1/" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回首页</a>#}
+{#    </div>#}
+    <div style="margin-left:10px;">
+    <table id="dg" class="easyui-datagrid" title="产品展示页面" style="width:1000px;height:560px"
+            data-options="singleSelect:true,collapsible:true">
+        <thead>
             <tr>
-                <th>goods_SN</th>
-                <th>Name</th>
-                <th>Key</th>
-                <th>Image</th>
-                <th>priority </th>
-                <th>file_address</th>
-                {#            <th width="200px">time</th>#}
+                <th field="goods_SN" width="110px">商品唯一序列号</th>
+                <th field="Name" width="100px">商品名</th>
+                <th field="Key" width="80px">商品关键字</th>
+                <th field="Image" width="200px">图片</th>
+                <th field="Download_Image" width="200px">图片下载</th>
+                <th field="priority" width="50px">优先级</th>
+                <th field="file_address" width="100px">本地文件地址</th>
+{#                <th field="file_address" width="400px">文件地址</th>#}
             </tr>
+        </thead>
+        <tbody>
+        {% for data in data_list %}
+            <tr>
+                <td width="50px">{{ data.goods_sn }}</td>
+                <td width="100px">{{ data.name }}</td>
+                <td width="100px">{{ data.key }}</td>
+                <td width="400px"><img src={{ data.image.url }} ></td>
+                <td width="400px">
+                    <a href="{{ data.image.url }}" download="download">download image</a>
+                </td>
+                <td width="400px">{{ data.priority }}</td>
+                <td width="400px">
+{#                    {% block content %}#}
+                        <a href="{{data.image.path}}" target="_blank">click here</a>
+{#                    {% endblock content %}#}
+                </td>
+{#                <td width="400px"><img src={{ request.build_absolute_uri }} ></td>#}
+            </tr>
+        {% endfor %}
+        </tbody>
 
-            {% for data in data_list %}
-                <tr>
-                    <td>{{ data.goods_sn}}</td>
-                    <td>{{ data.name }}</td>
-                    <td>{{ data.key }}</td>
-                    <td>{{ data.priority  }}</td>
-                    <td>{{ data.file_address }}</td>
-                    <td><img src={{ data.image.url }} > </td>
-                    {#                    <td>{{ host }}{{ data.image.url }}  </td>#}
-                    {#                    <td width="200px">{{ data.time }}</td>#}
-                </tr>
-            {% endfor %}
-
-        </table>
+    </table>
+    </div>
+    <div style="margin-left:10px;">
         <ul class="pagination">
             {% if page_object.has_previous %}
                 <li>
-                    <a href="?page={{ page_object.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                <a href="?page={{ page_object.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
                 </li>
             {% endif %}
 
-            {% for pg in page_object.paginator.page_range %}
-                {% if page_object.number == pg %}
-                    <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
-                {% else %}
-                    <li><a href="?page={{ pg }}">{{ pg }}</a></li>
-                {% endif %}
+           {% for pg in page_object.paginator.page_range %}
+            {% if page_object.number == pg %}
+            <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
+            {% else %}
+            <li><a href="?page={{ pg }}">{{ pg }}</a></li>
+            {% endif %}
             {% endfor %}
             {% if page_object.has_next %}
                 <li>
@@ -101,11 +100,5 @@
             {% endif %}
         </ul>
     </div>
-
-</div>
-
-</div>
-
-{#弹出的dialog中的内容#}
 </body>
 </html>

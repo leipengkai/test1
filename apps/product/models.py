@@ -22,6 +22,7 @@ class Goods(models.Model):
 
     class Meta:
         verbose_name = '商品'
+        verbose_name_plural = '商品' # 防止admin中app下的Model名，出现中文乱码
 
     def __str__(self):
         return self.name
@@ -49,6 +50,7 @@ class UserProperty(AbstractUser):
 
     class Meta:
         verbose_name = "用户"
+        verbose_name_plural = '用户'
 
     def __str__(self):
         return self.username

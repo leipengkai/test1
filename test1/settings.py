@@ -16,6 +16,8 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, BASE_DIR)
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
+# JET_MODULE_GOOGLE_ANALYTICS_CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, '1.json')
+JET_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -35,6 +37,8 @@ AUTH_USER_MODEL = 'product.UserProperty'
 # Application definition
 
 INSTALLED_APPS = (
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -80,15 +84,15 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

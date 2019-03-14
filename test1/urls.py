@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
+from jet.dashboard.dashboard_modules import google_analytics_views
 
 from django.conf.urls import include, url
-
 from django.contrib import admin
 from django.views.static import serve
-# -*- coding: utf-8 -*-
 
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
@@ -28,7 +27,8 @@ urlpatterns = [
     # Examples:
     # url(r'^$', 'test1.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-
+    url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),

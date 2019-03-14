@@ -18,28 +18,42 @@
 </style>
     <meta charset="UTF-8">
     <title>Product</title>
-    <link type="text/css" rel="stylesheet" href="easyui/themes/icon.css">
-    <link type="text/css" rel="stylesheet" href="easyui/themes/default/easyui.css">
-    <script type="text/javascript" src="easyui/jquery.min.js"></script>
-    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/icon.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/default/easyui.css' %}">
+    <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>
+{#        <link type="text/css" rel="stylesheet" href="static/easyui/themes/icon.css">#}
+{#       "GET /easyui/static/easyui/themes/icon.css HTTP/1.1" 404 77 #}
+{#<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">#}
+{#<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">#}
+{#<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">#}
+{#<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>#}
+{#<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>#}
 </head>
 
 <body class="easyui-layout">
-<div data-options="region:'north',split:false" style="height:100px;">
-    <h1 style="text-align: center">商品页面</h1>
-</div>
-<div data-options="region:'west',title:'商品分类',split:true" style="width:200px;">
-    <ul id="categoryTree" >
-    </ul>
-</div>
-<div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">
+{#<div data-options="region:'north',split:false" style="height:100px;">#}
+{#    <h1 style="text-align: center">商品页面</h1>#}
+{#</div>#}
+{#<div data-options="region:'west',title:'商品分类',split:true" style="width:200px;">#}
+{#    <ul id="categoryTree" >#}
+{#    </ul>#}
+{#</div>#}
+{#<div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">#}
+{##}
+{#</div>#}
 
-</div>
 
-</div>
 
-{#弹出的dialog中的内容#}
+<div data-options="region:'north',title:'工具栏',split:true" style="height:100px;"><h1 align="center">商品管理</h1></div>
+    <div data-options="region:'west',title:'商品分类',split:true" style="width:300px;">
+        <ul id="tree">
+        </ul>
+    </div>
+<div data-options="region:'center',title:'显示框'" style="padding:5px;background:#eee;">
+
 <div id="category-form-dialog">
     <div>
         <table border="1" cellspacing="1" cellpadding="1" >
@@ -50,7 +64,7 @@
                 <th>Image</th>
                 <th>priority </th>
                 <th>file_address</th>
-{#            <th width="200px">time</th>#}
+                {#            <th width="200px">time</th>#}
             </tr>
 
             {% for data in data_list %}
@@ -61,8 +75,8 @@
                     <td>{{ data.priority  }}</td>
                     <td>{{ data.file_address }}</td>
                     <td><img src={{ data.image.url }} > </td>
-{#                    <td>{{ host }}{{ data.image.url }}  </td>#}
-{#                    <td width="200px">{{ data.time }}</td>#}
+                    {#                    <td>{{ host }}{{ data.image.url }}  </td>#}
+                    {#                    <td width="200px">{{ data.time }}</td>#}
                 </tr>
             {% endfor %}
 
@@ -70,16 +84,16 @@
         <ul class="pagination">
             {% if page_object.has_previous %}
                 <li>
-                <a href="?page={{ page_object.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    <a href="?page={{ page_object.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
                 </li>
             {% endif %}
 
-           {% for pg in page_object.paginator.page_range %}
-            {% if page_object.number == pg %}
-            <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
-            {% else %}
-            <li><a href="?page={{ pg }}">{{ pg }}</a></li>
-            {% endif %}
+            {% for pg in page_object.paginator.page_range %}
+                {% if page_object.number == pg %}
+                    <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% endif %}
             {% endfor %}
             {% if page_object.has_next %}
                 <li>
@@ -90,5 +104,8 @@
 
 </div>
 
+</div>
+
+{#弹出的dialog中的内容#}
 </body>
 </html>

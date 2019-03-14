@@ -24,11 +24,12 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 SECRET_KEY = '1l6o8x$%k@j#9p(j2@@jcn!e^&gm5=5^^l28dy=owktm*1u!mv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False
 DEBUG = True
 
-# TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'product.UserProperty'
 # Application definition

@@ -12,7 +12,8 @@ from rest_framework_jwt.views import obtain_jwt_token
 from django.conf import settings
 from django.conf.urls.static import static
 
-from product.views import UserViewset,GoodsViewSet, GoodsAdminViewSet, GoodsEasyUIViewSet
+from product.views import UserViewset,GoodsViewSet, GoodsAdminViewSet, GoodsEasyUIViewSet,\
+    CustomLoginViewSet, CustomIndexViewSet
 
 from .settings import MEDIA_ROOT,STATIC_ROOT
 
@@ -37,4 +38,7 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),
     url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
     url(r'^easyui/$', GoodsEasyUIViewSet.as_view()),
+    url(r'^index/$', CustomIndexViewSet.as_view()),
+    url(r'^login/$', CustomLoginViewSet.as_view()),
+
 ]

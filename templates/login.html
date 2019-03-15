@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product</title>
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/icon.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/default/easyui.css' %}">
+    <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>
+    <script>
+        function getCookie(c_name){
+            if (document.cookie.length > 0){
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1)
+                {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    {#alert(unescape(document.cookie.substring(c_start,c_end)))#}
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+        $(function(){
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": getCookie("csrftoken"),"csrftoken": getCookie("csrftoken") },
+            });
+            $("#btnSubmit").click(function(){
+                {#$("#box").submit();#}
+                $('#box').submit(
+                    function(data){
+                        {#var data = $(this).serialize();    //序列化表单#}
+                        {#console.log(data);                 //打印表单数据#}
+                        console.log(data)
+                        if (data.success){
+                            alert(data.message)
+                        }
+                    }
+                );
+           })
+
+        });
+
+    </script>
+</head>
+<body>
+   <form id="box" class="easyui-form" method="post" action="/api-auth/login/">
+        {% csrf_token %}
+        <p>用户名：<input class="easyui-validatebox" type="text" name="username" id="username" /></p>
+        <p>密  码：<input type="password" name="password" id="password" /></p>
+        <p><input type="submit" id="btnSubmit" value="提交"/></p>
+   </form>
+
+
+</body>
+</html>
+<div class="easyui-resizable" style="width:100px;height:100px;border:1px solid #ccc;"
+     data-options="maxWidth:800,maxHeight:600">
+</div>

@@ -5,3 +5,7 @@ celery
 mysqlclient
 pillow
 djangorestframework-jwt
+
+
+
+

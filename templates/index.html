@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Document</title>
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/icon.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/default/easyui.css' %}">
+    <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+{#    <script src="http://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>#}
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        $("iframe[name=iframeContent]").on("load", function() {
+          var responseText = $("iframe")[0].contentDocument.body.getElementsByTagName("pre")[0].innerHTML;
+          alert(responseText);
+          //以下就可以判断并处理返回值
+        })
+        $(function(){
+            $("#login-submit").click(function(){
+                alert('jj')
+                {#$("#box").submit();#}
+                {#url:"http://127.0.0.1:8000/login/",#}
+                $('#login-form').submit(
+                    function(data){
+                        alert('sss')
+                        {#var data = $(this).serialize();    //序列化表单#}
+                        console.log(data);                 //打印表单数据
+                        {#console.log(data)#}
+                        if (data.success){
+                            alert(data.message)
+                        }
+                    }
+                );
+            })
+
+            function login() {
+                //登录逻辑
+                //jQuery写法
+                var user = $('#login-username').val();
+                var password = $('#login-password').val();
+                alert(password);
+                //JavaScript原生写法
+                //var user = document.getElementById('user').value;
+                //var password = document.getElementById('password').value;
+                $.ajax({
+                    type: "post",  //post put get 等等
+                    url: "http://127.0.0.1:8000/iiiilogin/",
+                    //编写登录功能时，要将异步设置为false（缺省为true）
+                    //如果async是ture,对于FireFox浏览器，会刷新掉alert()弹出框的内容
+                    //对于Chrome浏览器，第一次注册时会执行error的回调函数，输出“请求在连接过程中出现错误..”
+                    async:false,
+                    data: {  //要传入ashx文件的数据
+                        "username": user,
+                        "password": password
+                    },
+                    success: function (data, textStatus) {
+                        console.log(data),
+                            alert(data),
+                        //连接至ashx文件成功时，执行函数
+                        //data是从ashx文件返回来的信息，可以是字符串也可以是一个对象
+                        //如果data是字符串，则可以输出data的值
+                        //如果data是对象，则可以将这个对象的各属性值赋给其他变量
+                        //textStatus是表示状态的字符串，这里textStatus的值是"success"
+                        if (data == "admin") {
+                            window.open("index.html", "_blank");
+                        }
+                        else {
+                            alert(data);  //这里data是从ashx文件返回的“账户名或密码不存在..
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {  //连接至ashx文件失败时，执行函数
+                        //XMLHttpRequest在这个例子里没有用到
+                        //textStatus是表示状态的字符串，这里textStatus的值是"error"
+                        //errorThrown包含连接失败的信息，可以输出查看
+                        alert("请求在连接过程中出现错误..\n" + errorThrown);
+                    }
+                });
+            }
+        });
+
+
+
+    </script>
+    <style>
+        body{
+            background-color: #C7EDCC;
+            font-family: "microsoft yahei";
+            /*min-width: 800px;*/
+        }
+        img{
+            width: 100%;
+            /*height: 462px;*/
+        }
+        .navbar{
+            /*margin-bottom: -10px;*/
+        }
+        #myppt{
+            margin-top: -20px;
+
+        }
+    </style>
+</head>
+<body>
+    <ul class="nav navbar-nav navbar-right">
+        <li><a data-toggle="modal" data-target="#register" href=""><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+        <li><a data-toggle="modal" data-target="#login" href=""><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+    </ul>
+    {% if user %}
+        <h>Your warranty information will be included in the packaging.</h>
+    {% endif %}
+    <!-- 注册窗口 -->
+    <div id="register" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <h1 class="text-center">注册</h1>
+                </div>
+                <div class="modal-body">
+                    <form class="form-group" action="/api/v1/users/" method="post">
+                       {% csrf_token %}
+                            <div class="form-group">
+                                <label for="">用户名</label>
+                                <input class="form-control" name="username" type="text" placeholder="6-15位字母或数字">
+                            </div>
+                            <div class="form-group">
+                                <label for="">密码</label>
+                                <input class="form-control" name="password" type="password" placeholder="至少6位字母或数字">
+                            </div>
+{#                            <div class="form-group">#}
+{#                                <label for="">再次输入密码</label>#}
+{#                                <input class="form-control" type="password" placeholder="至少6位字母或数字">#}
+{#                            </div>#}
+                            <div class="form-group">
+                                <label for="">邮箱</label>
+                                <input class="form-control " name="email" type="email" >
+                            </div>
+                            <div class="form-group">
+                                <label for="">手机号</label>
+                                <input class="form-control" name="mobile" type="mobile">
+                            </div>
+                            <div class="text-right">
+                                <button class="btn btn-primary" type="submit">提交</button>
+                                <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                            </div>
+                            <a href="" data-toggle="modal" data-dismiss="modal" data-target="#login">已有账号？点我登录</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 登录窗口 -->
+    <div id="login" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <h1 class="text-center">登录</h1>
+                </div>
+                <div class="modal-body">
+{#                    <form class="form-group" action="/api-auth/login/" method="post">#}
+                    <iframe src="" frameborder="0" name="iframeContent" style="display: none;"></iframe>
+                    <form id='login-form' class="form-group" method="post" action="/login/">
+                        {% csrf_token %}
+                            <div class="form-group">
+                                <label for="">用户名</label>
+                                <input id="login-username" class="form-control" type="text" name="username" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label for="">密码</label>
+                                <input id="login-password" class="form-control" type="password" name="password" placeholder="">
+                            </div>
+                            <div class="text-right">
+                                <button id='login-submit' class="btn btn-primary" type="submit" >登录</button>
+                                <button class="btn btn-danger" data-dismiss="modal">取消</button>
+                            </div>
+                            <a href="" data-toggle="modal" data-dismiss="modal" data-target="#register">还没有账号？点我注册</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+<script>
+   $(document).ready(function(){
+              $.ajaxSetup({
+                   data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+              });
+             $('#login-form').submit(function(){
+                 var user = $('#login-username').val();
+                 var password = $('#login-password').val();
+                 alert(password);
+
+                  $.ajax({
+                      type:"POST",
+                      data: {uaeranme:user,password:password},
+                      url: "http://127.0.0.1:8000/login/", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致,或者直接写http地址
+                      cache: false,
+                      dataType: "html",
+                      success: function(ret){<span style="font-family: Roboto, Helvetica, Arial, sans-serif;">//成功时弹出view传回来的结果即后端处理函数中HttpResponse的返回值</span>
+                         $('#sql_output').html(ret)
+                         // var content= $("#sqlinput");
+                         // $('#sql_output').append(content.val());
+
+                     },
+                     error: function(){
+                         alert("false");
+                     }
+                 });
+                 return false;
+             });
+
+         });
+</script>

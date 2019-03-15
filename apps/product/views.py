@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from datetime import datetime
 from django.shortcuts import render
 from rest_framework.mixins import CreateModelMixin,DestroyModelMixin,RetrieveModelMixin,ListModelMixin
 from rest_framework.viewsets import GenericViewSet,ModelViewSet
@@ -8,12 +8,15 @@ from rest_framework import status,permissions,filters
 from django.contrib.auth.backends import ModelBackend
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication,BaseAuthentication
+from rest_framework_jwt.views import ObtainJSONWebToken
+from rest_framework_jwt.serializers import api_settings
 # from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -163,4 +166,34 @@ class GoodsEasyUIViewSet(APIView):
 
 
         return render(request,'goods.html',{'goods':queryset})
+
+class CustomIndexViewSet(APIView):
+
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'index.html'
+
+    @csrf_exempt
+    def get(self, request):
+        return render(request, "index.html", {})
+
+class CustomLoginViewSet(ObtainJSONWebToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.object.get('user') or request.user
+            token = serializer.object.get('token')
+            jwt_response_payload_handler = api_settings.JWT_RESPONSE_PAYLOAD_HANDLER
+            response_data = jwt_response_payload_handler(token, user, request)
+            response = Response(response_data)
+            if api_settings.JWT_AUTH_COOKIE:
+                expiration = (datetime.utcnow() +
+                              api_settings.JWT_EXPIRATION_DELTA)
+                response.set_cookie(api_settings.JWT_AUTH_COOKIE,
+                                    token,
+                                    expires=expiration,
+                                    httponly=True)
+            return render(request, "index.html", {user:user})
+        return render(request, "index.html", {})
 

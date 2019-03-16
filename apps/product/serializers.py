@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from models import UserProperty,Goods
+from .models import UserProperty,Goods
 
 
 class UserRegSerializer(serializers.ModelSerializer):

@@ -34,6 +34,23 @@ services:
         networks:
 #            - host
           - back-tier
+    web:
+        restart: always
+        build: ../
+
+        ports:
+            - "8000:8000"
+        links:
+            - mysql
+        volumes:
+            - '../:/code'
+        environment:
+            - DEBUG= 'true'
+        # 测试环境下
+        command: python3 manage.py runserver 0.0.0.0:8000
+
+        networks:
+        - back-tier
 
 networks:
   front-tier:

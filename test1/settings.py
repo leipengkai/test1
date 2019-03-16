@@ -49,7 +49,8 @@ INSTALLED_APPS = (
     # 'django-filters',
     'product',
     'djcelery',
-    'djkombu',
+    # 'djkombu',
+    # 'kombu',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,8 +76,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "test",
         'USER': 'root',
-        # 'PASSWORD': "123456",
-        'HOST': "127.0.0.1",
+        'PASSWORD': "123456",
+        # 'HOST': "0.0.0.0",
+        'HOST': "mysql",
         'PORT': "3306",
     }
 }
@@ -155,7 +157,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 import djcelery
 djcelery.setup_loader()  # 去每一个应用目录下找 tasks.py 文件，到文件中去执行 celery 任务函数
 CELERY_IMPORTS = ('product.tasks',)
-CELERY_BROKER_URL = 'redis://localhost:6379/0' # celery中间队列
+CELERY_BROKER_URL = 'redis://redis:6379/0' # celery中间队列
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 # CELERY_RESULT_BACKEND = 'django-db'
@@ -174,6 +176,6 @@ EMAIL_HOST_PASSWORD = 'femn2018'
 EMAIL_FROM = 'leipengkai<f1643076443@163.com>'
 
 # BROKER_URL = 'amqp://guest:guest@localhost:5672/'  # connect RabbitMQ
-BROKER_URL = 'django://' # and add this app:
+BROKER_URL = 'redis://redis:6379/1' # and add this app:
 
-INSTALLED_APPS += ('kombu.transport.django', )
+# INSTALLED_APPS += ('kombu.transport.django', )

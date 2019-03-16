@@ -1,4 +1,10 @@
-.idea/*
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/workspace.xml
+.idea/test1.iml
+.idea/tasks.xml
+.idea/vcs.xml
+
 */*/migrations/*
 *.pyc
 media/*
@@ -8,3 +14,5 @@ static/jet/*
 static/jet.dashboard/*
 static/range_filter/*
 static/rest_framework/*
+db/data/*
+*.swp

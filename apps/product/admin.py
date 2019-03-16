@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from models import *
+from .models import *
 
 # Register your models here.
 

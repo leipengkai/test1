@@ -22,9 +22,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handler
 
-from models import UserProperty,Goods
-from serializers import UserRegSerializer,UserDetailSerializer,GoodsSerializer
-from tasks import django_send_email,longtime_test
+from .models import UserProperty,Goods
+from .serializers import UserRegSerializer,UserDetailSerializer,GoodsSerializer
+from .tasks import django_send_email,longtime_test
 
 # from filters import GoodsFilter
 
@@ -43,7 +43,7 @@ class CustomBackend(ModelBackend):
             if user.check_password(password):
                 print('准备celery发送邮件')
                 msg = "<p>您已成功登录平台,谢谢您的使用</p>"
-                django_send_email(email=user.email, msg=msg)
+                # django_send_email(email=user.email, msg=msg)
                 return user
             else:
                 print('用户验证失败')

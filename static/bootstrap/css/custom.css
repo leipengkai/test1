@@ -1,0 +1,16 @@
+body{
+    background-color: #C7EDCC;
+    font-family: "microsoft yahei";
+    /*min-width: 800px;*/
+}
+img{
+    width: 100%;
+    /*height: 462px;*/
+}
+.navbar{
+    /*margin-bottom: -10px;*/
+}
+#myppt{
+    margin-top: -20px;
+
+}

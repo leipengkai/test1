@@ -7,109 +7,28 @@
     {% load static %}
     <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/icon.css' %}">
     <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/default/easyui.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'bootstrap/css/custom.css' %}">
     <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>
-    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
+
+
+{#    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">#}
 {#    <script src="http://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>#}
-    <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script>
-        $("iframe[name=iframeContent]").on("load", function() {
-          var responseText = $("iframe")[0].contentDocument.body.getElementsByTagName("pre")[0].innerHTML;
-          alert(responseText);
-          //以下就可以判断并处理返回值
-        })
-        $(function(){
-            $("#login-submit").click(function(){
-                alert('jj')
-                {#$("#box").submit();#}
-                {#url:"http://127.0.0.1:8000/login/",#}
-                $('#login-form').submit(
-                    function(data){
-                        alert('sss')
-                        {#var data = $(this).serialize();    //序列化表单#}
-                        console.log(data);                 //打印表单数据
-                        {#console.log(data)#}
-                        if (data.success){
-                            alert(data.message)
-                        }
-                    }
-                );
-            })
-
-            function login() {
-                //登录逻辑
-                //jQuery写法
-                var user = $('#login-username').val();
-                var password = $('#login-password').val();
-                alert(password);
-                //JavaScript原生写法
-                //var user = document.getElementById('user').value;
-                //var password = document.getElementById('password').value;
-                $.ajax({
-                    type: "post",  //post put get 等等
-                    url: "http://127.0.0.1:8000/iiiilogin/",
-                    //编写登录功能时，要将异步设置为false（缺省为true）
-                    //如果async是ture,对于FireFox浏览器，会刷新掉alert()弹出框的内容
-                    //对于Chrome浏览器，第一次注册时会执行error的回调函数，输出“请求在连接过程中出现错误..”
-                    async:false,
-                    data: {  //要传入ashx文件的数据
-                        "username": user,
-                        "password": password
-                    },
-                    success: function (data, textStatus) {
-                        console.log(data),
-                            alert(data),
-                        //连接至ashx文件成功时，执行函数
-                        //data是从ashx文件返回来的信息，可以是字符串也可以是一个对象
-                        //如果data是字符串，则可以输出data的值
-                        //如果data是对象，则可以将这个对象的各属性值赋给其他变量
-                        //textStatus是表示状态的字符串，这里textStatus的值是"success"
-                        if (data == "admin") {
-                            window.open("index.html", "_blank");
-                        }
-                        else {
-                            alert(data);  //这里data是从ashx文件返回的“账户名或密码不存在..
-                        }
-                    },
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {  //连接至ashx文件失败时，执行函数
-                        //XMLHttpRequest在这个例子里没有用到
-                        //textStatus是表示状态的字符串，这里textStatus的值是"error"
-                        //errorThrown包含连接失败的信息，可以输出查看
-                        alert("请求在连接过程中出现错误..\n" + errorThrown);
-                    }
-                });
-            }
-        });
+{#    <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>#}
 
 
 
-    </script>
-    <style>
-        body{
-            background-color: #C7EDCC;
-            font-family: "microsoft yahei";
-            /*min-width: 800px;*/
-        }
-        img{
-            width: 100%;
-            /*height: 462px;*/
-        }
-        .navbar{
-            /*margin-bottom: -10px;*/
-        }
-        #myppt{
-            margin-top: -20px;
-
-        }
-    </style>
 </head>
 <body>
     <ul class="nav navbar-nav navbar-right">
         <li><a data-toggle="modal" data-target="#register" href=""><span class="glyphicon glyphicon-user"></span> 注册</a></li>
         <li><a data-toggle="modal" data-target="#login" href=""><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
     </ul>
-    {% if user %}
+    <h1>successs</h1>
+    {% if user.is_authenticated %}
         <h>Your warranty information will be included in the packaging.</h>
     {% endif %}
     <!-- 注册窗口 -->
@@ -125,7 +44,7 @@
                     <h1 class="text-center">注册</h1>
                 </div>
                 <div class="modal-body">
-                    <form class="form-group" action="/api/v1/users/" method="post">
+                    <form class="form-group" action="/api/v1/users/?next=/index/" method="post">
                        {% csrf_token %}
                             <div class="form-group">
                                 <label for="">用户名</label>

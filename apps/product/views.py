@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from django.shortcuts import render
+from django.http import HttpResponse,HttpResponseRedirect
 from rest_framework.mixins import CreateModelMixin,DestroyModelMixin,RetrieveModelMixin,ListModelMixin
 from rest_framework.viewsets import GenericViewSet,ModelViewSet
 from rest_framework.response import Response
@@ -89,10 +90,11 @@ class UserViewset(CreateModelMixin,DestroyModelMixin,RetrieveModelMixin,ListMode
 
 
         headers = self.get_success_headers(serializer.data)
-        return Response(
-            re_dict,
-            status=status.HTTP_201_CREATED,
-            headers=headers)
+        return render(request, "index.html", {'user':False})
+        # return Response(
+        #     re_dict,
+        #     status=status.HTTP_201_CREATED,
+        #     headers=headers)
 
     def get_object(self):
         return self.request.user
@@ -101,7 +103,9 @@ class UserViewset(CreateModelMixin,DestroyModelMixin,RetrieveModelMixin,ListMode
         return serializer.save()
 
 
-class GoodsViewSet(RetrieveModelMixin,ListModelMixin,GenericViewSet):
+# class GoodsViewSet(RetrieveModelMixin,ListModelMixin,GenericViewSet):
+class GoodsViewSet(ModelViewSet):
+
     queryset = Goods.objects.all()
     serializer_class = GoodsSerializer
     permission_classes = []
@@ -174,13 +178,16 @@ class CustomIndexViewSet(APIView):
 
     @csrf_exempt
     def get(self, request):
-        return render(request, "index.html", {})
+        # if request.user.is_authenticated:
+        #     return render(request, "index.html", {'user':True})
+        return render(request, "index.html", {'user':False})
 
 class CustomLoginViewSet(ObtainJSONWebToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
+        print('-'*80)
         if serializer.is_valid():
             user = serializer.object.get('user') or request.user
             token = serializer.object.get('token')
@@ -194,6 +201,11 @@ class CustomLoginViewSet(ObtainJSONWebToken):
                                     token,
                                     expires=expiration,
                                     httponly=True)
-            return render(request, "index.html", {user:user})
-        return render(request, "index.html", {})
+                print('*'*80)
+                print(api_settings.JWT_AUTH_COOKIE)
+            response = HttpResponseRedirect('/easyui/')  # 再次刷新时就是easyui接口
+            return response
+            # return render(request, "index.html",{'user':True})   # 再次刷新时,还是上一个post login接口
+            # return render(request, "goods.html")
+        return render(request, "index.html", {'error':'login again'})
 

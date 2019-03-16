@@ -19,22 +19,63 @@
     <meta charset="UTF-8">
     <title>Product</title>
     {% load static %}
-    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/icon.css' %}">
-    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/default/easyui.css' %}">
-    <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>
+{#    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/icon.css' %}">#}
+{#    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/default/easyui.css' %}">#}
+{#    <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>#}
+{#    <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>#}
+{#    <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>#}
 {#        <link type="text/css" rel="stylesheet" href="static/easyui/themes/icon.css">#}
 {#       "GET /easyui/static/easyui/themes/icon.css HTTP/1.1" 404 77 #}
-{#<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">#}
-{#<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">#}
-{#<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">#}
-{#<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>#}
-{#<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>#}
+<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+<script>
+    function fn1(){
+        var obj={"goods_sn":"1","name":"1","key":"1","priority":"1","file_address":"1"}
+        $("#fm").form("load",obj);
+
+    }
+
+    function fn2(){
+
+        $("#fm").form("clear");
+    }
+
+    function fn3(){
+        $('#fm').form('submit', {
+            onSubmit: function(){
+                // do some check
+                // return false to prevent submit;
+                // return false; //就会不让提交
+            },
+            success:function(data){
+                $.messager.alert('Info', data, 'info');  //已经加载代码以页面格式显示
+                // 成功之后,返回的数据
+                <!--alert(data)-->  // 网页代码
+            }
+        });
+
+    }
+
+</script>
 </head>
 
 <body class="easyui-layout" style="font-size:14px;">
 
+    <button onclick="fn1()">加载数据</button>
+    <button onclick="fn2()">清除数据</button>
+    <button onclick="fn3()">发送数据</button>
+    <form id="fm" class="easyui-form" method="post" action="/api/v1/goods/" enctype="multipart/form-data" >
+        goods_sn:<input type="text" name="goods_sn"/></br>
+        name:<input type="text" name="name"/></br>
+        key:<input type="text" name="key"/></br>
+        priority:<input type="text" name="priority"/></br>
+        file_address:<input type="text" name="file_address"/></br>
+        image:<input class="easyui-filebox" style="width:300px" name="image">
+
+    </form>
 {#    {% load url %}#}
 {#https://stackoverflow.com/questions/901551/how-do-i-include-image-files-in-django-templates#}
 {#    {% load url from future %}#}
@@ -49,7 +90,7 @@
                 <th field="goods_SN" width="110px">商品唯一序列号</th>
                 <th field="Name" width="100px">商品名</th>
                 <th field="Key" width="80px">商品关键字</th>
-                <th field="Image" width="200px">图片</th>
+                <!--<th field="Image" width="200px">图片</th>-->
                 <th field="Download_Image" width="200px">图片下载</th>
                 <th field="priority" width="50px">优先级</th>
                 <th field="file_address" width="100px">本地文件地址</th>
@@ -62,7 +103,7 @@
                 <td width="50px">{{ data.goods_sn }}</td>
                 <td width="100px">{{ data.name }}</td>
                 <td width="100px">{{ data.key }}</td>
-                <td width="400px"><img src={{ data.image.url }} ></td>
+                <!--<td width="400px" height="400px" ><img src={{ data.image.url }} ></td>-->
                 <td width="400px">
                     <a href="{{ data.image.url }}" download="download">download image</a>
                 </td>

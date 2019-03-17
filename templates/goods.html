@@ -143,9 +143,13 @@ $(function(){
         image:<input class="easyui-filebox" style="width:300px" name="image">
         <input type="button" value="上传" onclick="doUpload()">
         <input type="submit" value="提交,仅仅是为了测试" />
-
-
     </form>
+
+
+<div id="dd" class="easyui-dialog" title="My Dialog" style="width:400px;height:200px;"
+    data-options="iconCls:'icon-save',resizable:true,modal:true">
+    Dialog Content.
+</div>
 {#    {% load url %}#}
 {#https://stackoverflow.com/questions/901551/how-do-i-include-image-files-in-django-templates#}
 {#    {% load url from future %}#}
@@ -154,14 +158,14 @@ $(function(){
 {#    </div>#}
     <div style="margin-left:10px;">
     <table id="dg" class="easyui-datagrid" title="产品展示页面" style="width:1000px;height:560px"
-            data-options="singleSelect:true,collapsible:true">
+            data-options="url:'/api/v1/goods/',method:'get',idField:'image',fitColumns:true,singleSelect:true,collapsible:true,pagination:true">
         <thead>
             <tr>
-                <th field="goods_SN" width="110px">商品唯一序列号</th>
-                <th field="Name" width="100px">商品名</th>
-                <th field="Key" width="80px">商品关键字</th>
-                <!--<th field="Image" width="200px">图片</th>-->
-                <th field="Download_Image" width="200px">图片下载</th>
+                <th field="goods_sn" width="110px">商品唯一序列号</th>
+                <th field="name" width="100px">商品名</th>
+                <th field="key" width="80px">商品关键字</th>
+                <!--<th field="Image" width="200px">显示原始图片</th>-->
+                <th field="image" width="200px">图片下载</th>
                 <th field="priority" width="50px">优先级</th>
                 <th field="file_address" width="100px">本地文件地址</th>
 {#                <th field="file_address" width="400px">文件地址</th>#}
@@ -179,9 +183,7 @@ $(function(){
                 </td>
                 <td width="400px">{{ data.priority }}</td>
                 <td width="400px">
-{#                    {% block content %}#}
                         <a href="{{data.image.path}}" target="_blank">click here</a>
-{#                    {% endblock content %}#}
                 </td>
 {#                <td width="400px"><img src={{ request.build_absolute_uri }} ></td>#}
             </tr>

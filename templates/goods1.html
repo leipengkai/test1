@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <style>
+    ul{
+        list-style: none;
+        margin:0px;
+        padding:0px;
+        width:auto;
+    }
+    ul li{
+        float:left;
+        margin-top:10px;
+        padding:10px;
+        border-style: solid;
+        border:1px solid;
+    }
+</style>
+    <meta charset="UTF-8">
+    <title>Product</title>
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/icon.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'easyui/themes/default/easyui.css' %}">
+    <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>
+{#        <link type="text/css" rel="stylesheet" href="static/easyui/themes/icon.css">#}
+{#       "GET /easyui/static/easyui/themes/icon.css HTTP/1.1" 404 77 #}
+
+<!--<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">-->
+<!--<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">-->
+<!--<link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">-->
+<!--<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>-->
+<!--<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>-->
+<script>
+
+    function doUpload(){
+        var formData = new FormData($("#ajaxfm")[0]);
+        $.ajax({
+            url:"/api/v1/goods/",
+            type:"POST",
+            data:formData,
+            async:false,
+            cache:false,
+            contentType:false,
+            processData:false,
+            success: function (data) {
+                $.messager.alert("提示", "增加成功！");
+                $("#dd").dialog('destroy');
+                $("#dg").datagrid("reload");
+              },
+            error: function (data) {
+                console.log(data);
+            },
+        });
+    }
+
+    function getCookie(c_name){
+        if (document.cookie.length > 0){
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1)
+            {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) c_end = document.cookie.length;
+                {#alert(unescape(document.cookie.substring(c_start,c_end)))#}
+                return unescape(document.cookie.substring(c_start,c_end));
+            }
+        }
+        return "";
+    }
+
+
+$(function () {
+
+    $.ajaxSetup({
+        headers: { "X-CSRFToken": getCookie("csrftoken"),"csrftoken": getCookie("csrftoken") },
+    });
+
+    $('#dg').datagrid({
+        url: '/api/v1/goods/',
+        method:'get',
+        pagination: true,
+        fitColumns: true,
+        toolbar:"#tool",
+        columns: [[
+            { field: 'check', title: '复选框', checkbox: true, width: 100, align: 'center' },
+            { field: 'goods_sn', title: '商品唯一序列号', width: 100, align:'center'},
+            { field: 'name', title: '商品名', width: 100, align: 'center'  },
+            { field: 'key', title: '商品关键字', width: 100, align: 'center' },
+            { field: 'image', title: '图片', width: 100, align: 'center' },
+            { field: 'priority', title: '优先级', width: 100, align: 'center' },
+            { field: 'file_address', title: '本地文件地址', width: 100, align: 'center' },
+        ]]
+    });
+    $('#tb').textbox({
+        buttonText: '搜索',
+        iconCls: 'icon-search',
+        iconAlign: 'left',
+        onClickButton: function () {
+            $('#dg').datagrid({
+                queryParams: {
+                    search: $("#tb").val(),
+                }
+            });
+        }
+    });
+    //删除
+    $("#btnDelete").linkbutton({
+        onClick: function () {
+            var rows = $("#dg").datagrid("getChecked");  // 多个
+            {#var rows = $("#dg").datagrid("getSelected");  // 只选择一个#}
+            if (rows.length == 0) {
+                $.messager.alert('警告', '请选择删除的数据！');
+            }
+            else {
+                
+                var goods_sn = "";
+                var data = "";
+                for (var i = 0; i < rows.length; i++) {
+                    if (i < rows.length - 1) {
+                        data += rows[i+1].goods_sn + ",";
+                        goods_sn = rows[0].goods_sn;
+                    }
+                    else {
+                        goods_sn = rows[0].goods_sn;
+                    }
+                    
+                }
+
+                console.info(goods_sn);
+                var data = data.substring(0,data.length - 1);
+                console.info(data);
+                $.messager.confirm('确认', '您确认想要删除记录吗？', function (r) {
+                    if (r) {
+                        $.ajax({
+                            url: '/api/v1/goods/' +goods_sn + '/', 
+                            type: 'delete',
+                            data: {
+                                goods_sns: data,
+                            },
+                            success: function (data, textStatus, jqXHR) {
+                                console.info(jqXHR); // 其余两个值都是为undefined
+                                if (jqXHR.status == 204) {
+                                    $.messager.alert('提示', '删除成功！');
+                                    $("#dg").datagrid("reload");
+                                }
+                                else {
+                                    $.messager.alert('提示', '删除失败！');
+                                }
+                            }
+
+                        });
+                    }
+                });  
+              
+
+            }
+        }
+    });
+    //编辑
+    $("#btnEdit").linkbutton({
+        onClick: function () {
+
+            var rows = $("#dg").datagrid("getSelections");
+            if (rows.length == 0 || rows.length > 1) {
+                $.messager.alert("提示", "请选择一行数据");
+            }
+            else {
+                $('#dd').dialog({
+                    title: '修改信息',
+                    width: 400,
+                    height: 400,
+                    closed: false,
+                    cache: false,
+                    modal: true,
+                });
+                var goods_sn = rows[0].goods_sn
+                $("#goods_sn").textbox({
+                    value: goods_sn
+                });
+                
+                $("#btn").linkbutton({
+                    onClick: function () {
+                        $.ajax({
+                            headers: {
+                                'X-HTTP-Method-Override': 'PATCH'
+                            },
+                            url: '/api/v1/goods/'+goods_sn+'/',
+                            type: 'PATCH',
+                            data: {
+                                goods_sn: rows[0].goods_sn,
+                                name: $("#name").val(),
+                                key: $("#key").val(),
+                                priority: $("#priority").val(),
+                                file_address: $("#file_address").val(),
+                            },
+                            <!--xhr: function() {-->
+                                <!--return window.XMLHttpRequest == null || new window.XMLHttpRequest().addEventListener == null -->
+                                    <!--? new window.ActiveXObject("Microsoft.XMLHTTP")-->
+                                    <!--: $.ajaxSettings.xhr();-->
+                            <!--},-->
+
+                            success: function (data, textStatus, jqXHR) {
+                                console.log('edit success');
+                                console.log(data);  // 有数据了
+                                console.log(jqXHR.status)
+                                if (jqXHR.status == 200) {
+                                    $.messager.alert("提示", "修改成功！");
+                                    $("#dd").dialog('destroy');
+                                    $("#dg").datagrid("reload");
+                                }
+                                else {
+                                    console.log(data);
+                                    $.messager.alert("提示", "修改失败！");
+                                }
+                            },
+                            error: function (data) {
+                                console.log('edit error');
+                                console.log(data);
+                            },
+                        });
+                    }
+                })
+
+            }
+        }
+    });
+
+    // 添加
+    $("#btnAdd").linkbutton({
+        onClick: function () {
+            $("#dd").dialog({
+                width: 500,
+                height: 400,
+                title: "添加商品",
+            });
+            $("#btn").linkbutton({
+                onClick:
+                    function ()
+                    {
+                        $.ajax({
+                            url: '/api/v1/goods/',
+                            type: 'post',
+                            data: {
+                                goods_sn: $("#goods_sn").val(),
+                                name: $("#name").val(),
+                                key: $("#key").val(),
+                                priority: $("#priority").val(),
+                                image: $("#image").prop("files")[0],
+                                file_address: $("#file_address").val(),
+                            },
+                            success: function (res) {
+                                if (res == 1) {
+                                    $.messager.alert("提示", "添加成功！");
+                                }
+                                else {
+                                    $.messager.alert("提示", "添加失败！");
+                                }
+                            }
+                        })
+                    }
+            });
+        }
+    })
+
+})
+
+</script>
+</head>
+
+<body class="easyui-layout" style="font-size:14px;">
+
+
+
+<div style="margin-left:10px;">
+    <div id="tool">
+        <a id="btnAdd" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a>
+        <a id="btnDelete" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+        <a id="btnEdit" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">编辑</a>
+        <input id="tb" type="text" style="width:300px">
+    </div>
+    <table id="dg"></table>
+    <div id="dd" style="display:none">
+        <div style="width:250px; margin:auto;">
+        <form id="ajaxfm" class="easyui-form"  enctype="multipart/form-data" >
+            <p>goods_sn:<input class="easyui-textbox" id="goods_sn" name="goods_sn"/></p>
+            <p>name:<input class="easyui-textbox" id="name" name="name"/></p>
+            <p>key:<input class="easyui-textbox" id="key" name="key"/></p>
+            <p>priority:<input class="easyui-textbox" id="priority" name="priority"/></p>
+            <p>file_address:<input class="easyui-textbox" id="file_address" name="file_address"/></p>
+            <p>image:<input class="easyui-filebox" id="image" name="image"></p>
+            <input type="button" class="easyui-linkbutton" value="确定添加上传" data-options="iconCls:'icon-save'" onclick="doUpload()">
+            <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">编辑保存</a>
+        </form>
+        </div>
+        
+    </div>
+
+</div>
+</body>
+</html>

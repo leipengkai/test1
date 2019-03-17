@@ -116,6 +116,58 @@ class GoodsViewSet(ModelViewSet):
     )
     search_fields = ('name', 'key')
     # filter_class = GoodsFilter
+    lookup_field = 'goods_sn'
+
+    # def get_object(self):
+    #     goods_sn = self.request.query_params.get('goods_sn', '')
+    #     return Goods.objects.filter(goods_sn = goods_sn)[0]
+    """
+    List a queryset.
+    """
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True)
+        total = serializer.data
+        context = serializer.data
+        page = request._request.GET.get('page',[])
+        rows = request._request.GET.get('rows',[])
+        if page:
+            page = int(page)  # 1,2
+            rows = int(rows)  # 10
+            context = total[(page-1)*rows:page*rows]
+
+        import json
+        data = {
+                'total':len(total),
+                'rows':context
+                }
+        data = json.dumps(data)
+        return HttpResponse(data)
+
+    def destroy(self, request, *args, **kwargs):
+        goods_sns = request.POST.get('goods_sns',None)
+        import json
+        mydata = {'res':1}
+
+        if not goods_sns:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response(data=json.dumps({'res':1}), content_type='application/json',status=status.HTTP_204_NO_CONTENT)
+            # return HttpResponse(json.dumps(mydata), mimetype="application/json")
+        goods_sns = [int(i) for i in goods_sns.split(',')]
+        if len(goods_sns) !=Goods.objects.filter(goods_sn__in=goods_sns).count():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        Goods.objects.filter(goods_sn__in=goods_sns).delete()
+        return Response(data=json.dumps({'res':1}), content_type='application/json',status=status.HTTP_204_NO_CONTENT)
+        # return HttpResponse(json.dumps(mydata), mimetype="application/json")
+
+
+
+    def perform_destroy(self, instance):
+        instance.delete()
 
 
 
@@ -139,7 +191,7 @@ class GoodsEasyUIViewSet(APIView):
 
     def get(self, request):
         queryset = Goods.objects.all()
-        paginator = Paginator(queryset , 2)
+        paginator = Paginator(queryset , 5)
         host = request.META['HTTP_HOST']
         # 参考:https://blog.csdn.net/weixin_42681866/article/details/85010630
         page = request.GET.get('page') # 从查询字符串获取page的当前页数
@@ -153,7 +205,7 @@ class GoodsEasyUIViewSet(APIView):
             page_object = paginator.page(1)
         except EmptyPage:
             page_object = paginator.page(paginator.num_pages)
-        return render(request, "goods.html", {
+        return render(request, "goods1.html", {
             'page_object':page_object,
             'data_list':data_list,
             'host':host,

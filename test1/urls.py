@@ -40,5 +40,6 @@ urlpatterns = [
     url(r'^easyui/$', GoodsEasyUIViewSet.as_view()),
     url(r'^index/$', CustomIndexViewSet.as_view()),
     url(r'^login/$', CustomLoginViewSet.as_view()),
+    url(r'^accounts/profile/$', CustomIndexViewSet.as_view()),
 
 ]

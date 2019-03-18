@@ -44,7 +44,7 @@ class CustomBackend(ModelBackend):
             if user.check_password(password):
                 print('准备celery发送邮件')
                 msg = "<p>您已成功登录平台,谢谢您的使用</p>"
-                # django_send_email(email=user.email, msg=msg)
+                django_send_email(email=user.email, msg=msg)
                 return user
             else:
                 print('用户验证失败')
@@ -257,7 +257,7 @@ class CustomLoginViewSet(ObtainJSONWebToken):
                 print(api_settings.JWT_AUTH_COOKIE)
             response = HttpResponseRedirect('/easyui/')  # 再次刷新时就是easyui接口
             return response
-            # return render(request, "index.html",{'user':True})   # 再次刷新时,还是上一个post login接口
+            # return render(request, "index.html",{'user':True})   # 再次刷新时,还是上一个post login接口,也没有登录状态
             # return render(request, "goods.html")
         return render(request, "index.html", {'error':'login again'})
 

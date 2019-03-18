@@ -82,7 +82,7 @@ function doUpload(){
 
 
 $(function(){
-//ajax提交信息,这种方式上传文件有问题
+//ajax提交信息,这种方式上传文件有问题,需要指明contentType,processData为False
     $("#ajaxfm").submit(function(e){
         <!--e.preventDefault();-->
         alert('jj')

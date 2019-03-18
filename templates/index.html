@@ -12,6 +12,7 @@
     <script type="text/javascript" src="{% static 'easyui/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'easyui/jquery.easyui.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'easyui/locale/easyui-lang-zh_CN.js' %}"></script>
+    <script type="text/javascript" src="{% static 'easyui/custom.js' %}"></script>
     <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
 
 
@@ -20,6 +21,43 @@
 {#    <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>#}
 
 
+    <script>
+
+        function getCookie(c_name){
+            if (document.cookie.length > 0){
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1)
+                {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    {#alert(unescape(document.cookie.substring(c_start,c_end)))#}
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+
+        $(function(){
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": getCookie("csrftoken"),"csrftoken": getCookie("csrftoken") },
+            });
+            $("#btnSubmit").click(function(){
+                {#$("#box").submit();#}
+                $('#box').submit(
+                    function(data){
+                        {#var data = $(this).serialize();    //序列化表单#}
+                        {#console.log(data);                 //打印表单数据#}
+                        console.log(data)
+                        if (data.success){
+                            alert(data.message)
+                        }
+                    }
+                );
+            })
+
+        });
+    </script>
 
 </head>
 <body>
@@ -27,9 +65,31 @@
         <li><a data-toggle="modal" data-target="#register" href=""><span class="glyphicon glyphicon-user"></span> 注册</a></li>
         <li><a data-toggle="modal" data-target="#login" href=""><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
     </ul>
-    <h1>successs</h1>
-    {% if user.is_authenticated %}
-        <h>Your warranty information will be included in the packaging.</h>
+    {% if request.user.is_authenticated %}
+        <div style="margin-left:10px;">
+            <div id="tool">
+                <a id="btnAdd" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加</a>
+                <a id="btnDelete" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除</a>
+                <a id="btnEdit" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">编辑</a>
+                <input id="tb" type="text" style="width:300px">
+            </div>
+            <table id="dg"></table>
+            <div id="dd" style="display:none">
+                <div style="width:250px; margin:auto;">
+                    <form id="ajaxfm" class="easyui-form" enctype="multipart/form-data">
+                        <p>goods_sn:<input class="easyui-textbox" id="goods_sn" name="goods_sn"/></p>
+                        <p>name:<input class="easyui-textbox" id="name" name="name"/></p>
+                        <p>key:<input class="easyui-textbox" id="key" name="key"/></p>
+                        <p>priority:<input class="easyui-textbox" id="priority" name="priority"/></p>
+                        <p>file_address:<input class="easyui-textbox" id="file_address" name="file_address"/></p>
+                        <p>image:<input class="easyui-filebox" id="image" name="image"></p>
+                        <a id="btn-add" type="button" class="easyui-linkbutton" data-options="iconCls:'icon-save'"
+                           onclick="doUpload()">确定添加上传</a>
+                        <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'">编辑保存</a>
+                    </form>
+                </div>
+            </div>
+        </div>
     {% endif %}
     <!-- 注册窗口 -->
     <div id="register" class="modal fade" tabindex="-1">
@@ -91,7 +151,7 @@
                 <div class="modal-body">
 {#                    <form class="form-group" action="/api-auth/login/" method="post">#}
                     <iframe src="" frameborder="0" name="iframeContent" style="display: none;"></iframe>
-                    <form id='login-form' class="form-group" method="post" action="/login/">
+                    <form id='box' class="form-group" method="post" action="/api-auth/login/" >
                         {% csrf_token %}
                             <div class="form-group">
                                 <label for="">用户名</label>
@@ -102,7 +162,7 @@
                                 <input id="login-password" class="form-control" type="password" name="password" placeholder="">
                             </div>
                             <div class="text-right">
-                                <button id='login-submit' class="btn btn-primary" type="submit" >登录</button>
+                                <button id='btnSubmit' class="btn btn-primary" type="submit" >登录</button>
                                 <button class="btn btn-danger" data-dismiss="modal">取消</button>
                             </div>
                             <a href="" data-toggle="modal" data-dismiss="modal" data-target="#register">还没有账号？点我注册</a>
@@ -116,34 +176,3 @@
 </html>
 
 
-<script>
-   $(document).ready(function(){
-              $.ajaxSetup({
-                   data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
-              });
-             $('#login-form').submit(function(){
-                 var user = $('#login-username').val();
-                 var password = $('#login-password').val();
-                 alert(password);
-
-                  $.ajax({
-                      type:"POST",
-                      data: {uaeranme:user,password:password},
-                      url: "http://127.0.0.1:8000/login/", //后台处理函数的url 这里用的是static url 需要与urls.py中的name一致,或者直接写http地址
-                      cache: false,
-                      dataType: "html",
-                      success: function(ret){<span style="font-family: Roboto, Helvetica, Arial, sans-serif;">//成功时弹出view传回来的结果即后端处理函数中HttpResponse的返回值</span>
-                         $('#sql_output').html(ret)
-                         // var content= $("#sqlinput");
-                         // $('#sql_output').append(content.val());
-
-                     },
-                     error: function(){
-                         alert("false");
-                     }
-                 });
-                 return false;
-             });
-
-         });
-</script>
